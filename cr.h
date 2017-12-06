@@ -345,14 +345,13 @@ struct cr_plugin {
 #ifndef CR_HOST
 
 // Some helpers required in the guest side.
-#pragma section(".state", read, write)
-
 #if defined(_MSC_VER)
-// GCC: __attribute__((section(".state")))
+#pragma section(".state", read, write)
 #define CR_STATE __declspec(allocate(".state"))
-#endif // defined(_MSC_VER)
-
-#if defined(__GNUC__) // clang & gcc
+#elif defined(__APPLE__)
+#define CR_STATE __attribute__((used,section("__DATA,__state")))
+#elif defined(__GNUC__) // clang & gcc
+#pragma section(".state", read, write)
 #define CR_STATE __attribute__((section(".state")))
 #endif // defined(__GNUC__)
 
