@@ -18,15 +18,16 @@ addons:
       - libglu1-mesa-dev
       - xorg-dev
 script:
-    - sudo ln -s /usr/bin/gcc-7 /usr/local/bin/gcc
-    - sudo ln -s /usr/bin/g++-7 /usr/local/bin/g++
-    - export CC=/usr/bin/gcc-7
-    - export CXX=/usr/bin/g++-7
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo ln -s /usr/bin/gcc-7 /usr/local/bin/gcc; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo ln -s /usr/bin/g++-7 /usr/local/bin/g++; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export CC=/usr/bin/gcc-7; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export CXX=/usr/bin/g++-7; fi
     - gcc -v && g++ -v && cmake --version
     - git --version
     # setup and check fips
     - git clone https://github.com/floooh/fips.git ../fips
     # build
+    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then python fips set config osx-make-debug; fi
     - python fips gen
     - python fips list targets
     - python fips build
