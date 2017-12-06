@@ -837,9 +837,7 @@ static int cr_plugin_main(cr_plugin &ctx, cr_op operation) {
 #include <csignal>
 #include <cstring>
 #include <dlfcn.h>
-#include <elf.h>
 #include <fcntl.h>
-#include <link.h>
 #include <setjmp.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -864,6 +862,10 @@ bool cr_is_empty(const void *const buf, int64_t len) {
     }
     return !r;
 }
+
+#if !defined(__APPLE__)
+#include <elf.h>
+#include <link.h>
 
 // unix,internal
 // save section informations to be used during load/unload when copying
@@ -1041,6 +1043,14 @@ static bool cr_plugin_validate_sections(cr_plugin &ctx, so_handle handle,
 
     return result;
 }
+#else // __APPLE__
+
+static bool cr_plugin_validate_sections(cr_plugin &ctx, so_handle handle,
+                                        const fs::path &imagefile,
+                                        bool rollback) {
+}
+
+#endif
 
 static void cr_so_unload(cr_plugin &ctx) {
     assert(ctx.p);
